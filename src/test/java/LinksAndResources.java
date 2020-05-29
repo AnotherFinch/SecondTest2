@@ -1,3 +1,4 @@
+
 import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
@@ -112,9 +113,9 @@ public class LinksAndResources {
     }
 
 
-
-    public Collection<Object[]> collection() {
-        return  Arrays.asList(new Object[][]{{"Sokolov", "Nikita", "30.12.1987", "Соколов", "Никита", "Васильевич", "30.12.1987", "1111", "111111", "02.11.2012", "Выдан"},
+    @Parameterized.Parameters
+    public static Collection<Object[]> collection() {
+        return Arrays.asList(new Object[][]{{"Sokolov", "Nikita", "30.12.1987", "Соколов", "Никита", "Васильевич", "30.12.1987", "1111", "111111", "02.11.2012", "Выдан"},
                 {"Bikov", "Pavel", "10.02.1988", "Быков", "Павел", "Алексеевич", "10.02.1988", "2222", "222222", "11.11.2011", "Выдан органом"},
                 {"Krasnov", "Alex", "23.07.1984", "Краснов", "Александр", "Сергеевич", "23.07.1984", "3333", "333333", "16.08.2009", "Выдан государственным органом исполнительной власти "}});
     }
@@ -142,6 +143,4 @@ public class LinksAndResources {
     @Parameterized.Parameter(10)
     public String issued;
 }
-
-
 
