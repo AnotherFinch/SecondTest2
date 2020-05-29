@@ -1,118 +1,168 @@
 import org.hamcrest.core.Is;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.util.concurrent.TimeUnit;
 
+@RunWith(Parameterized.class)
 public class Test extends LinksAndResources {
 
-    WebDriver driver;
-    WebDriverWait wait;
+
+
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    public WebDriver getDriver() {
+        return driver;
+    }
+
+    public WebDriverWait getWait() {
+        return wait;
+    }
 
     @Before
     public void startUp() {
 
-        System.setProperty("webdriver.chrome.driver", "webdrivers/chromedriver");
-
-        //System.setProperty("webdriver.gecko.driver", "webdrivers/geckodriver");
-        //("webdriver.chrome.driver", "webdrivers/chromedriver");
-        //("webdriver.gecko.driver", "webdrivers/geckodriver");
-
-        driver = new ChromeDriver();
+        String browser = System.getProperty("browser", "chrome");
+        if ("chrome".equals(browser)) {
+            System.setProperty("webdriver.chrome.driver", "webdrivers/chromedriver");
+            driver = new ChromeDriver();
+        } else if ("firefox".equals(browser)) {
+            System.setProperty("webdriver.gecko.driver", "webdrivers/geckodriver");
+            driver = new FirefoxDriver();
+        }
         driver.manage().window().maximize();
         wait = new WebDriverWait(driver, 20);
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+
     }
 
+
     @org.junit.Test
-    public void firstTest() {
+    public void firstTest()  {
 
         //Перейти по ссылке http://www.sberbank.ru/ru/person
         driver.get(getBaseUrl());
-
         //Нажать на – Страхование
-        WebElement insuranceLinkElement = driver.findElement(By.xpath(getInsuranceLink()));
-        wait.until(ExpectedConditions.elementToBeClickable(insuranceLinkElement));
-        insuranceLinkElement.click();
-
+        waitAndClick(getInsuranceLink());
         //Выбрать – Путешествие и покупки
-        // не понятно как это работает, ибо через раз
-        WebElement insuranceAndBuyLinkElement = driver.findElement(By.xpath(getInsuranceAndBuyLink()));
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(getInsuranceAndBuyLink())));
-        insuranceAndBuyLinkElement.click();
-
-        //Нажать на – Оформить Онлайн
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(getButtonApplyOnline())));
-        WebElement buttonApplyOnline = driver.findElement(By.xpath(getButtonApplyOnline()));
-
+        waitAndClick(getInsuranceAndBuyLink());
         //проверяем наличие заголовка
-        String findText = driver.findElement(By.xpath(getTitleAboutInsurence())).getText();
-        Assert.assertThat("Текст на странице не соответствует ожидаемому", findText, Is.is("Страхование путешественников"));
+        findOnText(getTitleAboutInsurence(), "Текст на странице не соответствует ожидаемому", "Страхование путешественников");
+        //Нажать на – Оформить Онлайн
+        waitAndClick(getButtonApplyOnline());
+        //На вкладке – Выбор полиса выбрать сумму страховой защиты – Минимальная Нажать Оформить
+        waitAndClick(getMinInsurance());
+        waitAndClick(getButtonArrange());
 
-        //через executor пролистываем вниз до появления кнопки Оформить онлайн
-        WebElement buttonApply = driver.findElement(By.xpath(getButtonApplyOnline()));
+        //На вкладке Оформить заполнить поля:
+        //Фамилию и Имя, Дату рождения застрахованных
+
+        getWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath(getInputSurname())));
+        waitAndClick(getInputSurname());
+        sendKey(getInputSurname(), surname);
+
+        waitAndClick(getInputName());
+        sendKey(getInputName(), name);
+
+        waitAndClick(getInputBirthDate());
+        sendKey(getInputBirthDate(), bd);
+
+        //Данные страхователя: Фамилия, Имя, Отчество, Дата рождения, Пол Паспортные данные
+        // Пришлось поставить костыль, без него пишет, что используются недопустимые символы
+        getWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath(getInputLastName())));
+        waitAndClick(getInputLastName());
+        sendKey(getInputLastName(), lastName);
+
+        waitAndClick(getInputFirstName());
+        sendKey(getInputFirstName(), firstName);
+
+        waitAndClick(getInputMiddleName());
+        sendKey(getInputMiddleName(), middleName);
+
+        waitAndClick(getInputBD());
+        sendKey(getInputBD(), birthDate);
+
+        waitAndClick(getInputMiddleName());
+        waitAndClick(getInputSex());
+
+        waitAndClick(getInputPassSeries());
+        sendKey(getInputPassSeries(), passSeries);
+
+        waitAndClick(getInputPassNum());
+        sendKey(getInputPassNum(), passNum);
+
+        waitAndClick(getInputDatePass());
+        sendKey(getInputDatePass(), datePass);
+
+        waitAndClick(getInputIssued());
+        sendKey(getInputIssued(), issued);
+
+//        assertElement("Не указана фамилия", "Sokolov", getInputSurname());
+//        assertElement("Не указано имя", "Nikita", getInputName());
+//        assertElement("Не указана дата", "30.12.1987", getInputBirthDate());
+//        assertElement("Не указана фамилия", "Быков", getInputLastName());
+//        assertElement("Не указано имя", "Павел", getInputFirstName());
+//        assertElement("Не указано отчество", "Владимирович", getInputMiddleName());
+//        assertElement("Не указана дата", "30.12.1987", getInputBD());
+//        assertElement("Не указана серия паспорта", "4444", getInputPassSeries());
+//        assertElement("Не указан номер паспорта ", "444444", getInputPassNum());
+//        assertElement("Не указана дата паспорта ", "11.02.2011", getInputDatePass());
+//        assertElement("Не указано кем выдан ", "Выдан отделением таким-то", getInputIssued());
+
+        waitAndClick(getButtonSubmit());
+        findIs(getAlert(), "Не отображается текст", true);
+    }
+
+    @After
+    public void quit() {
+        driver.quit();
+    }
+
+
+    void waitAndClick(String XPath) {
+        Actions actions = new Actions(getDriver());
+        WebElement element = getDriver().findElement(By.xpath(XPath));
+        getWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath(XPath)));
+        getWait().until(ExpectedConditions.elementToBeClickable(element));
+        actions.moveToElement(element).build().perform();
         JavascriptExecutor executor;
         executor = (JavascriptExecutor) driver;
-        executor.executeScript("arguments[0].scrollIntoView();", buttonApply);
-        buttonApplyOnline.click();
-
-        //На вкладке – Выбор полиса выбрать сумму страховой защиты – Минимальная Нажать Оформить
-        WebElement minInsurance = driver.findElement(By.xpath(getMinInsurance()));
-        executor.executeScript("arguments[0].scrollIntoView();", minInsurance);
-        minInsurance.click();
-
-        WebElement elementButtonArrange = driver.findElement(By.xpath(getButtonArrange()));
-        executor.executeScript("arguments[0].scrollIntoView();", elementButtonArrange);
-        elementButtonArrange.click();
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(getInputName())));
-
-        WebElement elementInputSurname = driver.findElement(By.xpath(getInputSurname()));
-        elementInputSurname.sendKeys("Sokolov");
-
-        WebElement elementInputName = driver.findElement(By.xpath(getInputName()));
-        elementInputName.sendKeys("Nikita");
-
-        WebElement elementInputBirth = driver.findElement(By.xpath(getInputBirthDate()));
-        elementInputBirth.sendKeys("30.12.1987");
+        executor.executeScript("arguments[0].scrollIntoView();", element);
+        element.click();
     }
+
+    void findOnText(String XPath, String badText, String goodText) {
+        String findText = driver.findElement(By.xpath(XPath)).getText();
+        Assert.assertThat(badText, findText, Is.is(goodText));
+    }
+
+    void findIs(String XPath, String badText, boolean yesOrNo) {
+        WebElement elementAlert = driver.findElement(By.xpath(XPath));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(XPath)));
+        Assert.assertEquals(badText, yesOrNo, elementAlert.isDisplayed());
+    }
+
+
+    void sendKey(String XPath, String text) {
+        WebElement element = getDriver().findElement(By.xpath(XPath));
+        element.sendKeys(text);
+    }
+
+    void assertElement(String badText, String goodText, String XPath) {
+        WebElement element = getDriver().findElement(By.xpath(XPath));
+        Assert.assertEquals(badText, goodText, element.getAttribute("value"));
+    }
+
 }
-
-
-
-/**
-
-
-
-
- * На вкладке Оформить заполнить поля:
- * Фамилию и Имя, Дату рождения застрахованных
- * Данные страхователя: Фамилия, Имя, Отчество, Дата рождения, Пол Паспортные данные
- * Контактные данные не заполняем
- *
- * Проверить, что все поля заполнены правильно Нажать продолжить
- *
- * Проверить, что появилось сообщение - Заполнены не все обязательные поля
-
- * *** пункт 5 работает не всегда
- * кто сообразит, что нужно загуглить чтобы работало и сделает, тот молодец причем, такая штука в реальных проектах встречается часто
- *
- *
- *
-
-• Сборка проекта с помощью Maven
-        • Аннотации JUnit (@Before, @After,....)
-        • Assert, AssertThat
-        • Параметризация (заполнять страницу с фио 3 раза)
-        • Выбор браузера (IE, Chrome, FireFox) через переменную и запуск теста в выбранном браузере через командную строку
-
-
-
- */
