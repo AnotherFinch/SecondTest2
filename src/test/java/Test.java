@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class Test extends LinksAndResources {
 
 
-
     private WebDriver driver;
     private WebDriverWait wait;
 
@@ -47,7 +46,6 @@ public class Test extends LinksAndResources {
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 
     }
-
 
     @org.junit.Test
     public void firstTest()  {
@@ -109,17 +107,17 @@ public class Test extends LinksAndResources {
         waitAndClick(getInputIssued());
         sendKey(getInputIssued(), issued);
 
-//        assertElement("Не указана фамилия", "Sokolov", getInputSurname());
-//        assertElement("Не указано имя", "Nikita", getInputName());
-//        assertElement("Не указана дата", "30.12.1987", getInputBirthDate());
-//        assertElement("Не указана фамилия", "Быков", getInputLastName());
-//        assertElement("Не указано имя", "Павел", getInputFirstName());
-//        assertElement("Не указано отчество", "Владимирович", getInputMiddleName());
-//        assertElement("Не указана дата", "30.12.1987", getInputBD());
-//        assertElement("Не указана серия паспорта", "4444", getInputPassSeries());
-//        assertElement("Не указан номер паспорта ", "444444", getInputPassNum());
-//        assertElement("Не указана дата паспорта ", "11.02.2011", getInputDatePass());
-//        assertElement("Не указано кем выдан ", "Выдан отделением таким-то", getInputIssued());
+        assertElement("Не указана фамилия", surname, getInputSurname());
+        assertElement("Не указано имя", name, getInputName());
+        assertElement("Не указана дата", bd, getInputBirthDate());
+        assertElement("Не указана фамилия", lastName, getInputLastName());
+        assertElement("Не указано имя", firstName, getInputFirstName());
+        assertElement("Не указано отчество", middleName, getInputMiddleName());
+        assertElement("Не указана дата", birthDate, getInputBD());
+        assertElement("Не указана серия паспорта", passSeries, getInputPassSeries());
+        assertElement("Не указан номер паспорта ", passNum, getInputPassNum());
+        assertElement("Не указана дата паспорта ", datePass, getInputDatePass());
+        assertElement("Не указано кем выдан ", issued, getInputIssued());
 
         waitAndClick(getButtonSubmit());
         findIs(getAlert(), "Не отображается текст", true);
